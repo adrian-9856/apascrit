@@ -330,7 +330,7 @@ function onEdit(e) {
     return;
   }
 
-  if (rango.getNumRows() !== 1 || rango.getNumColumns() === 1) {
+  if (rango.getNumRows() !== 1 || rango.getNumColumns() !== 1) {
     return;
   }
 
