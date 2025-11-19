@@ -179,6 +179,8 @@ function actualizarEstructuraTabla() {
         rangoEncabezado.setFontWeight('bold');
         rangoEncabezado.setFontSize(11);
         rangoEncabezado.setHorizontalAlignment('center');
+        rangoEncabezado.setVerticalAlignment('middle');
+        rangoEncabezado.setWrap(true);
 
         // Ajustar ancho de columna
         hoja.setColumnWidth(col, 150);
@@ -188,6 +190,9 @@ function actualizarEstructuraTabla() {
         if (ultimaFila > 1) {
           const rangoDatos = hoja.getRange(2, col, ultimaFila - 1, 1);
           rangoDatos.setBackground(coloresEncabezados[i].fondo);
+          rangoDatos.setWrap(true); // Ajuste automático de texto
+          rangoDatos.setVerticalAlignment('top'); // Alinear texto arriba
+          rangoDatos.setFontSize(10); // Tamaño legible
         }
       }
 
@@ -2636,6 +2641,15 @@ function aplicarFormatoHojaPrincipal() {
 
   // APLICAR COLORES A COLUMNAS DE ETAPAS
   aplicarColoresColumnasEtapas(hoja);
+
+  // APLICAR WRAP TEXT A COLUMNA DE NOTAS
+  const ultimaFila = Math.max(hoja.getLastRow(), 100);
+  if (ultimaFila > 1) {
+    const rangoNotas = hoja.getRange(2, COLUMNAS.NOTAS, ultimaFila - 1, 1);
+    rangoNotas.setWrap(true);
+    rangoNotas.setVerticalAlignment('top');
+    rangoNotas.setFontSize(10);
+  }
 }
 
 // ====================================
@@ -2671,12 +2685,16 @@ function aplicarColoresColumnasEtapas(hoja) {
       rangoEncabezado.setFontWeight('bold');
       rangoEncabezado.setFontSize(11);
       rangoEncabezado.setHorizontalAlignment('center');
+      rangoEncabezado.setVerticalAlignment('middle');
+      rangoEncabezado.setWrap(true);
 
       // Celdas de datos (filas 2 en adelante) - fondo más suave
       if (ultimaFila > 1) {
         const rangoDatos = hoja.getRange(2, col, ultimaFila - 1, 1);
-        // Aplicar color de fondo más claro (mezclando con blanco)
         rangoDatos.setBackground(color.fondo);
+        rangoDatos.setWrap(true); // Ajuste automático de texto
+        rangoDatos.setVerticalAlignment('top'); // Alinear texto arriba
+        rangoDatos.setFontSize(10); // Tamaño de fuente legible
       }
     });
 
@@ -2738,6 +2756,15 @@ function aplicarFormatoHojasLlamadas() {
 
     // APLICAR COLORES A COLUMNAS DE ETAPAS EN HOJAS DE LLAMADAS
     aplicarColoresColumnasEtapasEnHoja(hoja);
+
+    // APLICAR WRAP TEXT A COLUMNA DE NOTAS (columna 16)
+    const ultimaFila = Math.max(hoja.getLastRow(), 100);
+    if (ultimaFila > 1) {
+      const rangoNotas = hoja.getRange(2, 16, ultimaFila - 1, 1);
+      rangoNotas.setWrap(true);
+      rangoNotas.setVerticalAlignment('top');
+      rangoNotas.setFontSize(10);
+    }
   });
 }
 
@@ -2767,11 +2794,16 @@ function aplicarColoresColumnasEtapasEnHoja(hoja) {
       rangoEncabezado.setFontWeight('bold');
       rangoEncabezado.setFontSize(11);
       rangoEncabezado.setHorizontalAlignment('center');
+      rangoEncabezado.setVerticalAlignment('middle');
+      rangoEncabezado.setWrap(true);
 
       // Celdas de datos (filas 2 en adelante)
       if (ultimaFila > 1) {
         const rangoDatos = hoja.getRange(2, col, ultimaFila - 1, 1);
         rangoDatos.setBackground(color.fondo);
+        rangoDatos.setWrap(true); // Ajuste automático de texto
+        rangoDatos.setVerticalAlignment('top'); // Alinear texto arriba
+        rangoDatos.setFontSize(10); // Tamaño de fuente legible
       }
     });
 
