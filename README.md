@@ -6,15 +6,32 @@
 
 Se agregaron **7 columnas nuevas** entre "Formación" y "Etapa Actual" para registrar información detallada de cada llamada según la etapa del participante:
 
-| # | Columna | Descripción |
-|---|---------|-------------|
-| 5 | **Aliados** | Registro de conexiones y contactos con aliados |
-| 6 | **Plataformas** | Información sobre uso de plataformas de empleo |
-| 7 | **Conexión laboral** | Detalles de conexiones laborales establecidas |
-| 8 | **Por su cuenta** | Información de búsqueda independiente de empleo |
-| 9 | **No busca trabajar** | Registro si el participante no busca empleo |
-| 10 | **Empleado** | Información de empleos conseguidos |
-| 11 | **No terminó la formación** | Registro de participantes que no completaron |
+| # | Columna | Descripción | Color |
+|---|---------|-------------|-------|
+| 5 | **Aliados** | Registro de conexiones y contactos con aliados | 🔵 Azul claro |
+| 6 | **Plataformas** | Información sobre uso de plataformas de empleo | 🟣 Morado claro |
+| 7 | **Conexión laboral** | Detalles de conexiones laborales establecidas | 🟢 Verde claro |
+| 8 | **Por su cuenta** | Información de búsqueda independiente de empleo | 🟠 Naranja claro |
+| 9 | **No busca trabajar** | Registro si el participante no busca empleo | ⚪ Gris claro |
+| 10 | **Empleado** | Información de empleos conseguidos | 🟢 Verde oscuro claro |
+| 11 | **No terminó la formación** | Registro de participantes que no completaron | 🔴 Rojo claro |
+
+### 🎨 Colores Distintivos
+
+Cada columna de etapa tiene un color único para facilitar su identificación visual:
+
+- **🔵 Aliados** - Azul claro (#B3D9FF)
+- **🟣 Plataformas** - Morado claro (#D9C3FF)
+- **🟢 Conexión laboral** - Verde claro (#B3FFB3)
+- **🟠 Por su cuenta** - Naranja claro (#FFD9B3)
+- **⚪ No busca trabajar** - Gris claro (#E0E0E0)
+- **🟢 Empleado** - Verde oscuro claro (#C5E8C5)
+- **🔴 No terminó la formación** - Rojo claro (#FFCCCC)
+
+Los colores se aplican automáticamente:
+- En la **hoja principal** (📋 Seguimiento General)
+- En todas las **hojas de llamadas** (📞 Llamada 1-5)
+- En la hoja de **✅ Finalizados**
 
 ### Nueva Estructura de Columnas
 
@@ -331,7 +348,10 @@ Revisa: `⚙️ Ver Configuración Actual` para estado del sistema
 
 ### Añadido
 - ✅ 7 columnas nuevas de etapas (5-11)
+- ✅ **Colores distintivos** para cada columna de etapa
+- ✅ Constante `COLORES_ETAPAS` con paleta de colores
 - ✅ Función `actualizarEstructuraTabla()` sin pérdida de datos
+- ✅ Función `aplicarColoresColumnasEtapas()` para formato visual
 - ✅ Escritura automática en columnas según etapa
 - ✅ Constante `COLUMNAS` para mapeo centralizado
 - ✅ Función `determinarColumnaEtapa()` para lógica de escritura

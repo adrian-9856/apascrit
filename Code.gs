@@ -33,6 +33,17 @@ const COLUMNAS = {
 const TOTAL_COLUMNAS = 18;
 const TOTAL_COLUMNAS_DESTINO = 17; // Hojas de llamadas no tienen checkbox
 
+// COLORES PARA COLUMNAS DE ETAPAS v2.8
+const COLORES_ETAPAS = {
+  ALIADOS: { fondo: '#B3D9FF', texto: '#003366', nombre: 'Azul claro' },
+  PLATAFORMAS: { fondo: '#D9C3FF', texto: '#4B0082', nombre: 'Morado claro' },
+  CONEXION_LABORAL: { fondo: '#B3FFB3', texto: '#006600', nombre: 'Verde claro' },
+  POR_SU_CUENTA: { fondo: '#FFD9B3', texto: '#CC5500', nombre: 'Naranja claro' },
+  NO_BUSCA_TRABAJAR: { fondo: '#E0E0E0', texto: '#333333', nombre: 'Gris claro' },
+  EMPLEADO: { fondo: '#C5E8C5', texto: '#006600', nombre: 'Verde oscuro claro' },
+  NO_TERMINO_FORMACION: { fondo: '#FFCCCC', texto: '#990000', nombre: 'Rojo claro' }
+};
+
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('🎓 Sistema de Seguimiento')
@@ -148,21 +159,40 @@ function actualizarEstructuraTabla() {
 
       hoja.getRange(1, 5, 1, 7).setValues([nuevosEncabezados]);
 
-      // Aplicar formato a los encabezados nuevos
-      const rangoNuevosEncabezados = hoja.getRange(1, 5, 1, 7);
-      rangoNuevosEncabezados.setBackground('#1f4e79');
-      rangoNuevosEncabezados.setFontColor('#ffffff');
-      rangoNuevosEncabezados.setFontWeight('bold');
-      rangoNuevosEncabezados.setFontSize(11);
-      rangoNuevosEncabezados.setHorizontalAlignment('center');
+      // Aplicar formato con COLORES DISTINTIVOS a los encabezados nuevos
+      const coloresEncabezados = [
+        COLORES_ETAPAS.ALIADOS,
+        COLORES_ETAPAS.PLATAFORMAS,
+        COLORES_ETAPAS.CONEXION_LABORAL,
+        COLORES_ETAPAS.POR_SU_CUENTA,
+        COLORES_ETAPAS.NO_BUSCA_TRABAJAR,
+        COLORES_ETAPAS.EMPLEADO,
+        COLORES_ETAPAS.NO_TERMINO_FORMACION
+      ];
 
-      // Ajustar anchos de columnas
-      for (let col = 5; col <= 11; col++) {
+      // Aplicar color individual a cada columna
+      for (let i = 0; i < 7; i++) {
+        const col = 5 + i;
+        const rangoEncabezado = hoja.getRange(1, col);
+        rangoEncabezado.setBackground(coloresEncabezados[i].fondo);
+        rangoEncabezado.setFontColor(coloresEncabezados[i].texto);
+        rangoEncabezado.setFontWeight('bold');
+        rangoEncabezado.setFontSize(11);
+        rangoEncabezado.setHorizontalAlignment('center');
+
+        // Ajustar ancho de columna
         hoja.setColumnWidth(col, 150);
+
+        // Aplicar color de fondo a las celdas de datos
+        const ultimaFila = Math.max(hoja.getLastRow(), 100);
+        if (ultimaFila > 1) {
+          const rangoDatos = hoja.getRange(2, col, ultimaFila - 1, 1);
+          rangoDatos.setBackground(coloresEncabezados[i].fondo);
+        }
       }
 
       hojasActualizadas++;
-      resultados.push(`✅ ${nombreHoja}: Actualizada exitosamente`);
+      resultados.push(`✅ ${nombreHoja}: Actualizada exitosamente con colores`);
     });
 
     // Reconfigurar validaciones y checkboxes con nuevas posiciones
@@ -2565,12 +2595,20 @@ function aplicarFormatoHojaPrincipal() {
 
   if (!hoja) return;
 
-  const rangoEncabezado = hoja.getRange(1, 1, 1, TOTAL_COLUMNAS);
-  rangoEncabezado.setBackground('#1f4e79');
-  rangoEncabezado.setFontColor('#ffffff');
-  rangoEncabezado.setFontWeight('bold');
-  rangoEncabezado.setFontSize(11);
-  rangoEncabezado.setHorizontalAlignment('center');
+  // ENCABEZADOS: Aplicar color azul oscuro a columnas 1-4 y 12-18
+  const rangoEncabezadoInicio = hoja.getRange(1, 1, 1, 4);
+  rangoEncabezadoInicio.setBackground('#1f4e79');
+  rangoEncabezadoInicio.setFontColor('#ffffff');
+  rangoEncabezadoInicio.setFontWeight('bold');
+  rangoEncabezadoInicio.setFontSize(11);
+  rangoEncabezadoInicio.setHorizontalAlignment('center');
+
+  const rangoEncabezadoFinal = hoja.getRange(1, 12, 1, 7);
+  rangoEncabezadoFinal.setBackground('#1f4e79');
+  rangoEncabezadoFinal.setFontColor('#ffffff');
+  rangoEncabezadoFinal.setFontWeight('bold');
+  rangoEncabezadoFinal.setFontSize(11);
+  rangoEncabezadoFinal.setHorizontalAlignment('center');
 
   // Ajustar anchos de columnas
   hoja.setColumnWidth(COLUMNAS.ID, 100);
@@ -2595,6 +2633,58 @@ function aplicarFormatoHojaPrincipal() {
   hoja.setColumnWidth(COLUMNAS.PROCESAR, 80);
 
   hoja.setFrozenRows(1);
+
+  // APLICAR COLORES A COLUMNAS DE ETAPAS
+  aplicarColoresColumnasEtapas(hoja);
+}
+
+// ====================================
+// NUEVA FUNCIÓN: APLICAR COLORES A COLUMNAS DE ETAPAS
+// ====================================
+function aplicarColoresColumnasEtapas(hoja) {
+  if (!hoja) {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    hoja = ss.getSheetByName('📋 Seguimiento General');
+  }
+
+  if (!hoja) return;
+
+  try {
+    const ultimaFila = Math.max(hoja.getLastRow(), 100);
+
+    // Aplicar colores a encabezados de columnas de etapas
+    const encabezadosEtapas = [
+      { col: COLUMNAS.ALIADOS, color: COLORES_ETAPAS.ALIADOS },
+      { col: COLUMNAS.PLATAFORMAS, color: COLORES_ETAPAS.PLATAFORMAS },
+      { col: COLUMNAS.CONEXION_LABORAL, color: COLORES_ETAPAS.CONEXION_LABORAL },
+      { col: COLUMNAS.POR_SU_CUENTA, color: COLORES_ETAPAS.POR_SU_CUENTA },
+      { col: COLUMNAS.NO_BUSCA_TRABAJAR, color: COLORES_ETAPAS.NO_BUSCA_TRABAJAR },
+      { col: COLUMNAS.EMPLEADO, color: COLORES_ETAPAS.EMPLEADO },
+      { col: COLUMNAS.NO_TERMINO_FORMACION, color: COLORES_ETAPAS.NO_TERMINO_FORMACION }
+    ];
+
+    encabezadosEtapas.forEach(({ col, color }) => {
+      // Encabezado (fila 1)
+      const rangoEncabezado = hoja.getRange(1, col);
+      rangoEncabezado.setBackground(color.fondo);
+      rangoEncabezado.setFontColor(color.texto);
+      rangoEncabezado.setFontWeight('bold');
+      rangoEncabezado.setFontSize(11);
+      rangoEncabezado.setHorizontalAlignment('center');
+
+      // Celdas de datos (filas 2 en adelante) - fondo más suave
+      if (ultimaFila > 1) {
+        const rangoDatos = hoja.getRange(2, col, ultimaFila - 1, 1);
+        // Aplicar color de fondo más claro (mezclando con blanco)
+        rangoDatos.setBackground(color.fondo);
+      }
+    });
+
+    console.log('✅ Colores aplicados a columnas de etapas');
+
+  } catch (error) {
+    console.error('Error aplicando colores a columnas de etapas:', error);
+  }
 }
 
 function aplicarFormatoHojasLlamadas() {
@@ -2612,12 +2702,20 @@ function aplicarFormatoHojasLlamadas() {
     const hoja = ss.getSheetByName(nombreHoja);
     if (!hoja) return;
 
-    const rangoEncabezado = hoja.getRange(1, 1, 1, TOTAL_COLUMNAS_DESTINO);
-    rangoEncabezado.setBackground(colores.fondo);
-    rangoEncabezado.setFontColor(colores.texto);
-    rangoEncabezado.setFontWeight('bold');
-    rangoEncabezado.setFontSize(11);
-    rangoEncabezado.setHorizontalAlignment('center');
+    // ENCABEZADOS: Aplicar color de la hoja a columnas 1-4 y 12-17
+    const rangoEncabezadoInicio = hoja.getRange(1, 1, 1, 4);
+    rangoEncabezadoInicio.setBackground(colores.fondo);
+    rangoEncabezadoInicio.setFontColor(colores.texto);
+    rangoEncabezadoInicio.setFontWeight('bold');
+    rangoEncabezadoInicio.setFontSize(11);
+    rangoEncabezadoInicio.setHorizontalAlignment('center');
+
+    const rangoEncabezadoFinal = hoja.getRange(1, 12, 1, 6);
+    rangoEncabezadoFinal.setBackground(colores.fondo);
+    rangoEncabezadoFinal.setFontColor(colores.texto);
+    rangoEncabezadoFinal.setFontWeight('bold');
+    rangoEncabezadoFinal.setFontSize(11);
+    rangoEncabezadoFinal.setHorizontalAlignment('center');
 
     // Ajustar anchos
     hoja.setColumnWidth(1, 100); // ID
@@ -2637,7 +2735,49 @@ function aplicarFormatoHojasLlamadas() {
     hoja.setColumnWidth(17, 100); // Total Llamadas
 
     hoja.setFrozenRows(1);
+
+    // APLICAR COLORES A COLUMNAS DE ETAPAS EN HOJAS DE LLAMADAS
+    aplicarColoresColumnasEtapasEnHoja(hoja);
   });
+}
+
+// Función auxiliar para aplicar colores en hojas de llamadas
+function aplicarColoresColumnasEtapasEnHoja(hoja) {
+  if (!hoja) return;
+
+  try {
+    const ultimaFila = Math.max(hoja.getLastRow(), 100);
+
+    // Aplicar colores a encabezados y celdas de columnas de etapas
+    const encabezadosEtapas = [
+      { col: 5, color: COLORES_ETAPAS.ALIADOS }, // Aliados
+      { col: 6, color: COLORES_ETAPAS.PLATAFORMAS }, // Plataformas
+      { col: 7, color: COLORES_ETAPAS.CONEXION_LABORAL }, // Conexión laboral
+      { col: 8, color: COLORES_ETAPAS.POR_SU_CUENTA }, // Por su cuenta
+      { col: 9, color: COLORES_ETAPAS.NO_BUSCA_TRABAJAR }, // No busca trabajar
+      { col: 10, color: COLORES_ETAPAS.EMPLEADO }, // Empleado
+      { col: 11, color: COLORES_ETAPAS.NO_TERMINO_FORMACION } // No terminó
+    ];
+
+    encabezadosEtapas.forEach(({ col, color }) => {
+      // Encabezado (fila 1)
+      const rangoEncabezado = hoja.getRange(1, col);
+      rangoEncabezado.setBackground(color.fondo);
+      rangoEncabezado.setFontColor(color.texto);
+      rangoEncabezado.setFontWeight('bold');
+      rangoEncabezado.setFontSize(11);
+      rangoEncabezado.setHorizontalAlignment('center');
+
+      // Celdas de datos (filas 2 en adelante)
+      if (ultimaFila > 1) {
+        const rangoDatos = hoja.getRange(2, col, ultimaFila - 1, 1);
+        rangoDatos.setBackground(color.fondo);
+      }
+    });
+
+  } catch (error) {
+    console.error('Error aplicando colores en hoja:', error);
+  }
 }
 
 // ====================================
@@ -3086,17 +3226,18 @@ console.log('   • Análisis de datos E-commerce');
 console.log('   • SAC (Servicio al Cliente)');
 console.log('   • Ofimática');
 console.log('');
-console.log('📝 COLUMNAS DE ETAPAS:');
-console.log('   • Aliados');
-console.log('   • Plataformas');
-console.log('   • Conexión laboral');
-console.log('   • Por su cuenta');
-console.log('   • No busca trabajar');
-console.log('   • Empleado');
-console.log('   • No terminó la formación');
+console.log('📝 COLUMNAS DE ETAPAS CON COLORES:');
+console.log('   🔵 Aliados (Azul claro)');
+console.log('   🟣 Plataformas (Morado claro)');
+console.log('   🟢 Conexión laboral (Verde claro)');
+console.log('   🟠 Por su cuenta (Naranja claro)');
+console.log('   ⚪ No busca trabajar (Gris claro)');
+console.log('   🟢 Empleado (Verde oscuro)');
+console.log('   🔴 No terminó la formación (Rojo claro)');
 console.log('');
 console.log('🔧 MEJORAS v2.8:');
 console.log('   • Escritura automática en columnas de etapas');
+console.log('   • Colores distintivos para cada columna');
 console.log('   • Actualización de estructura sin pérdida de datos');
 console.log('   • Bloqueo por fila para evitar duplicados');
 console.log('   • Diagnóstico de doble procesamiento');
