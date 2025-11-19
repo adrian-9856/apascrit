@@ -2754,8 +2754,8 @@ function aplicarFormatoHojasLlamadas() {
 
     hoja.setFrozenRows(1);
 
-    // APLICAR COLORES A COLUMNAS DE ETAPAS EN HOJAS DE LLAMADAS
-    aplicarColoresColumnasEtapasEnHoja(hoja);
+    // APLICAR COLORES A COLUMNAS DE ETAPAS EN HOJAS DE LLAMADAS (mismo color que la hoja)
+    aplicarColoresColumnasEtapasEnHoja(hoja, colores);
 
     // APLICAR WRAP TEXT A COLUMNA DE NOTAS (columna 16)
     const ultimaFila = Math.max(hoja.getLastRow(), 100);
@@ -2769,38 +2769,32 @@ function aplicarFormatoHojasLlamadas() {
 }
 
 // Función auxiliar para aplicar colores en hojas de llamadas
-function aplicarColoresColumnasEtapasEnHoja(hoja) {
+function aplicarColoresColumnasEtapasEnHoja(hoja, coloresHoja) {
   if (!hoja) return;
 
   try {
     const ultimaFila = Math.max(hoja.getLastRow(), 100);
 
-    // Aplicar colores a encabezados y celdas de columnas de etapas
-    const encabezadosEtapas = [
-      { col: 5, color: COLORES_ETAPAS.ALIADOS }, // Aliados
-      { col: 6, color: COLORES_ETAPAS.PLATAFORMAS }, // Plataformas
-      { col: 7, color: COLORES_ETAPAS.CONEXION_LABORAL }, // Conexión laboral
-      { col: 8, color: COLORES_ETAPAS.POR_SU_CUENTA }, // Por su cuenta
-      { col: 9, color: COLORES_ETAPAS.NO_BUSCA_TRABAJAR }, // No busca trabajar
-      { col: 10, color: COLORES_ETAPAS.EMPLEADO }, // Empleado
-      { col: 11, color: COLORES_ETAPAS.NO_TERMINO_FORMACION } // No terminó
-    ];
+    // USAR EL MISMO COLOR DE LA HOJA para todas las columnas de etapas
+    const columnas = [5, 6, 7, 8, 9, 10, 11]; // Columnas de etapas
 
-    encabezadosEtapas.forEach(({ col, color }) => {
-      // Encabezado (fila 1)
+    columnas.forEach(col => {
+      // Encabezado (fila 1) - mismo color que el encabezado de la hoja
       const rangoEncabezado = hoja.getRange(1, col);
-      rangoEncabezado.setBackground(color.fondo);
-      rangoEncabezado.setFontColor(color.texto);
+      rangoEncabezado.setBackground(coloresHoja.fondo);
+      rangoEncabezado.setFontColor(coloresHoja.texto);
       rangoEncabezado.setFontWeight('bold');
       rangoEncabezado.setFontSize(11);
       rangoEncabezado.setHorizontalAlignment('center');
       rangoEncabezado.setVerticalAlignment('middle');
       rangoEncabezado.setWrap(true);
 
-      // Celdas de datos (filas 2 en adelante)
+      // Celdas de datos (filas 2 en adelante) - fondo más claro
       if (ultimaFila > 1) {
         const rangoDatos = hoja.getRange(2, col, ultimaFila - 1, 1);
-        rangoDatos.setBackground(color.fondo);
+        // Color de fondo más claro (30% del color original + 70% blanco)
+        const fondoClaro = mezclarConBlanco(coloresHoja.fondo, 0.3);
+        rangoDatos.setBackground(fondoClaro);
         rangoDatos.setWrap(true); // Ajuste automático de texto
         rangoDatos.setVerticalAlignment('top'); // Alinear texto arriba
         rangoDatos.setFontSize(10); // Tamaño de fuente legible
@@ -2810,6 +2804,27 @@ function aplicarColoresColumnasEtapasEnHoja(hoja) {
   } catch (error) {
     console.error('Error aplicando colores en hoja:', error);
   }
+}
+
+// Función auxiliar para mezclar color con blanco (hacer más claro)
+function mezclarConBlanco(colorHex, intensidad) {
+  // Convertir hex a RGB
+  const r = parseInt(colorHex.slice(1, 3), 16);
+  const g = parseInt(colorHex.slice(3, 5), 16);
+  const b = parseInt(colorHex.slice(5, 7), 16);
+
+  // Mezclar con blanco (255, 255, 255)
+  const rClaro = Math.round(r * intensidad + 255 * (1 - intensidad));
+  const gClaro = Math.round(g * intensidad + 255 * (1 - intensidad));
+  const bClaro = Math.round(b * intensidad + 255 * (1 - intensidad));
+
+  // Convertir de vuelta a hex
+  const hexClaro = '#' +
+    rClaro.toString(16).padStart(2, '0') +
+    gClaro.toString(16).padStart(2, '0') +
+    bClaro.toString(16).padStart(2, '0');
+
+  return hexClaro;
 }
 
 // ====================================
